@@ -1,36 +1,79 @@
-# WithResources
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/with_resources`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
-## Installation
-
-Add this line to your application's Gemfile:
+# with_resources: Add "with" statement in your Ruby script
 
 ```ruby
-gem 'with_resources'
+# gem install with_resources
+require "with_resources"
+WithResourecs.with(->(){
+    sock = TCPSocket.open("dest.example.com", port)
+    httpclient = MyHTTPClient.new(sock) 
+}) do |sock, httpclient|
+    # ...
+    # httpclient.close # will be called automatically
+    # sock.close
+end
+
+require "with_resources/toplevel"
+
+using WithResources::TopLevel
+# it makes "with" available in this file
+
+with(->(){ a = One.new; b = Another.new(a) }) do |a, b|
+    # ...
+end
+
+# or enable everywhere! (DANGER!)
+require "with_resources/kernel_ext"
 ```
 
-And then execute:
+This gem provides a feature to allocate/release resource objects safely.
+This feature is widely known as 'try-with-resources' (Java), 'with' statement (Python), 'using' statement (C#) and many others.
 
-    $ bundle
+`WithResources.with` method does:
 
-Or install it yourself as:
+* accept a lambda argument to allocate resources
+* accept a block to be called
+* release allocated resources automatically after block is processed in reverse order of allocated order
 
-    $ gem install with_resources
+All allocated resources will be released even when any errors are raised in block, in `obj.close` or in allocating another resources.
 
-## Usage
+## API
 
-TODO: Write usage instructions here
+* `WithResources.with(lambda_to_allocate, release_method: :close, &block)`
 
-## Development
+All values assigned into local variable in `lambda_to_allocate` will be passed to `block` as block arguments. (Don't re-assign values into same local variable, neither undefine local variable, in that labmda.)
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+It can accept `release_method` keyword argument to specify the method name to release resources. The specified method will be called in release stage, without any arguments. It's impossible to specify different method names for resources.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+### Introduce `with` to top-level namespace
 
-## Contributing
+Top level `with` is available via 2 different ways. One is using Refinements, another is modifying `Kernel` in open-class way.
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/tagomoris/with_resources.
+```ruby
+require "with_resources/toplevel"
+using WithResources::TopLevel
 
+with(->(){ r = create_resource() }) do |r|
+    # ...
+end
+```
+
+Refinements is a feature of Ruby to apply Module modification in just a file (by `using` statement).
+`using WithResources::TopLevel` introduces top level `with` in safer way than modifying `Kernel`.
+
+```ruby
+require "with_resource/kernel_ext"
+
+# now, "with" is available everywhere...
+```
+
+Requiring `with_resource/kernel_ext` modifies `Kernel` module globally to add `with`. It's not recommended in most cases.
+
+* * * * *
+
+## Authors
+
+* Satoshi Tagomori <tagomoris@gmail.com>
+
+## License
+
+MIT (See License.txt)
