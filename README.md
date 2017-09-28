@@ -2,7 +2,9 @@
 
 ```ruby
 # gem install with_resources
+
 require "with_resources"
+
 WithResourecs.with(->(){
     sock = TCPSocket.open("dest.example.com", port)
     httpclient = MyHTTPClient.new(sock) 
