@@ -38,6 +38,10 @@ This feature is widely known as 'try-with-resources' (Java), 'with' statement (P
 
 All allocated resources will be released even when any errors are raised in block, in `obj.close` or in allocating another resources.
 
+### Disclosure
+
+This library is a kind of PoC to introduce safe resource allocation in Ruby world. Take care about using this library in your production environment.
+
 ## API
 
 * `WithResources.with(lambda_to_allocate, release_method: :close, &block)`
@@ -69,6 +73,20 @@ require "with_resource/kernel_ext"
 ```
 
 Requiring `with_resource/kernel_ext` modifies `Kernel` module globally to add `with`. It's not recommended in most cases.
+
+## Performance
+
+Because of some magical hacks, `with` has performance overhead.
+
+The benchmark score below shows the difference of performances between standard `begin-ensure` and `with` (elasped seconds by 10,000 times). Benchmark script is available at `misc/bench.rb`.
+
+```
+       user     system      total        real
+begin  0.040000   0.000000   0.040000 (  0.037753)
+with   1.400000   0.010000   1.410000 (  1.423388)
+```
+
+It's not so huge overhead in actual application, but it might be better to use `with` in heavy loops.
 
 * * * * *
 
