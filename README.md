@@ -86,7 +86,7 @@ begin  0.040000   0.000000   0.040000 (  0.037753)
 with   1.400000   0.010000   1.410000 (  1.423388)
 ```
 
-It's not so huge overhead in actual application, but it might be better to use `with` in heavy loops.
+It's not so huge overhead in actual application, but it might be better not to use `with` in heavy loops.
 
 * * * * *
 
