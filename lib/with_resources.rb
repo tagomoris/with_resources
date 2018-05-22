@@ -1,12 +1,6 @@
 require "with_resources/version"
 
 module WithResources
-  module ErrorExt
-    def suppressed
-      @suppressed ||= []
-    end
-  end
-
   def self.with(allocation, release_method: :close, &block)
     var_names = []
     vars = {}
@@ -48,19 +42,13 @@ module WithResources
       return_value = block.call(*vars.values)
     rescue => e
       error = e
-      error.extend(ErrorExt)
     ensure
       vars.values.reverse.each do |v|
         if v.respond_to?(release_method)
           begin
             v.send(release_method)
           rescue => e
-            if error
-              error.suppressed << e
-            else
-              error = e
-              error.extend(ErrorExt)
-            end
+            # ignore errors in release operation
           end
         end
       end

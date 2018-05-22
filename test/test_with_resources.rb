@@ -54,8 +54,6 @@ class WithResourcesTest < ::Test::Unit::TestCase
 
     assert_kind_of(RuntimeError, e)
     assert_equal("yay", e.message)
-    assert(e.respond_to?(:suppressed))
-    assert_equal([], e.suppressed)
 
     assert_equal(0, @r.value)
     assert_equal([["a", :close]], @r.called_list)
@@ -78,8 +76,6 @@ class WithResourcesTest < ::Test::Unit::TestCase
 
     assert_kind_of(RuntimeError, e)
     assert_equal("yay", e.message)
-    assert(e.respond_to?(:suppressed))
-    assert_equal([], e.suppressed)
 
     assert_equal(0, @r.value)
     assert_equal([["b", :close], ["a", :close]], @r.called_list)
@@ -99,11 +95,6 @@ class WithResourcesTest < ::Test::Unit::TestCase
 
     assert_kind_of(RuntimeError, e)
     assert_equal("yay", e.message)
-    assert(e.respond_to?(:suppressed))
-    assert_equal(1, e.suppressed.size)
-
-    assert_kind_of(RuntimeError, e.suppressed.first)
-    assert_equal("Resource#close", e.suppressed.first.message)
 
     assert_equal(1, @r.value)
     assert_equal([], @r.called_list)
@@ -126,11 +117,6 @@ class WithResourcesTest < ::Test::Unit::TestCase
 
     assert_kind_of(RuntimeError, e)
     assert_equal("yay", e.message)
-    assert(e.respond_to?(:suppressed))
-    assert_equal(1, e.suppressed.size)
-
-    assert_kind_of(RuntimeError, e.suppressed[0])
-    assert_equal("Resource#close", e.suppressed[0].message)
 
     assert_equal(1, @r.value)
     assert_equal([["a", :close]], @r.called_list)
@@ -153,13 +139,6 @@ class WithResourcesTest < ::Test::Unit::TestCase
 
     assert_kind_of(RuntimeError, e)
     assert_equal("yay", e.message)
-    assert(e.respond_to?(:suppressed))
-    assert_equal(2, e.suppressed.size)
-
-    assert_kind_of(RuntimeError, e.suppressed[0])
-    assert_equal("Resource#close", e.suppressed[0].message)
-    assert_kind_of(RuntimeError, e.suppressed[1])
-    assert_equal("Resource#close", e.suppressed[1].message)
 
     assert_equal(2, @r.value)
     assert_equal([], @r.called_list)
@@ -179,8 +158,6 @@ class WithResourcesTest < ::Test::Unit::TestCase
 
     assert_kind_of(RuntimeError, e)
     assert_equal("Resource.new", e.message)
-    assert(e.respond_to?(:suppressed))
-    assert_equal(0, e.suppressed.size)
 
     assert_equal(0, @r.value)
     assert_equal([], @r.called_list)
@@ -203,8 +180,6 @@ class WithResourcesTest < ::Test::Unit::TestCase
 
     assert_kind_of(RuntimeError, e)
     assert_equal("Resource.new", e.message)
-    assert(e.respond_to?(:suppressed))
-    assert_equal(0, e.suppressed.size)
 
     assert_equal(0, @r.value)
     assert_equal([["a", :close]], @r.called_list)
@@ -227,11 +202,6 @@ class WithResourcesTest < ::Test::Unit::TestCase
 
     assert_kind_of(RuntimeError, e)
     assert_equal("Resource.new", e.message)
-    assert(e.respond_to?(:suppressed))
-    assert_equal(1, e.suppressed.size)
-
-    assert_kind_of(RuntimeError, e.suppressed.first)
-    assert_equal("Resource#close", e.suppressed.first.message)
 
     assert_equal(1, @r.value)
     assert_equal([], @r.called_list)
